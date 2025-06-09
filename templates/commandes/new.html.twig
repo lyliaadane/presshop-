@@ -188,6 +188,7 @@
         });
 
         let result = await response.json();
+        console.log('Résultat storeCommande:', result); 
 
         if (result.success) {
             let totalCommande = parseFloat(document.getElementById('totalCommande').textContent.replace('€', '').replace(',', ''));
