@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="container mt-5">
+    <h2>Rechercher un produit</h2>
+
+    <form method="post">
+        {{ form_start(form) }}
+        <div class="input-group mb-3">
+            {{ form_widget(form.query, {'attr': {'class': 'form-control', 'placeholder': 'Rechercher une catégorie...'}}) }}
+            <button class="btn btn-primary" type="submit">Rechercher</button>
+        </div>
+        {{ form_end(form) }}
+    </form>
+
+    <div class="row g-4">
+        {% if produits is not empty %}
+            {% for produit in produits %}
+                <div class="col-lg-3 col-md-6">
+                    <div class="border rounded text-center p-4">
+                        <img src="{{ produit.image }}" class="img-fluid mb-3" alt="{{ produit.nom }}" style="height: 200px; object-fit: cover;">
+                        <h5 class="mb-2">{{ produit.nom }}</h5>
+                        <p class="text-muted mb-1">{{ produit.idCategorie.nom }}</p>
+                        <h6 class="text-primary mb-2">{{ produit.prix }} €</h6>
+                        <small class="text-muted">Unité : {{ produit.uniteVente }}</small>
+                        <div class="mt-3">
+                            <a href="#" class="btn btn-primary rounded-pill px-4 py-2">
+                                Ajouter au panier
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12 text-center">
+                <p>Aucun produit ou catégorie trouvée.</p>
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

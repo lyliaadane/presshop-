@@ -1,0 +1,26 @@
+
+{% block title %}Annulation de votre commande{% endblock %}
+
+{% block body %}
+<div style="width: 100%; padding: 20px; background-color: #f8f9fa; font-family: Arial, sans-serif;">
+    <div style="max-width: 600px; margin: auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <h1 style="text-align: center; color: #7ED958; margin-bottom: 20px;">Votre commande a bien été annulé, {{ commande.prenomClient }} !</h1>
+
+        <p style="font-size: 16px; color: #333;">Nous avons bien reçu l'annulation de votre commande. Vous trouverez ci-dessous les détails de votre commande.</p>
+
+        <div style="background-color: #f1f1f1; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+            <h3 style="color: #6c757d; margin-bottom: 10px;">Vos informations :</h3>
+             <p><strong>Numéro de commande :</strong> #{{ commande.id }}</p>
+            <p><strong>Nom :</strong> {{ commande.nomClient }}</p>
+            <p><strong>Prénom :</strong> {{ commande.prenomClient }}</p>
+            <p><strong>Email :</strong> {{ commande.mailClient }}</p>
+            <p><strong>Téléphone :</strong> {{ commande.telephoneClient }}</p>
+            <p><strong>Date de récupération :</strong> {{ commande.dateRecuperation|date('d/m/Y H:i') }}</p>
+        </div>
+
+        <p style="margin-top: 20px; color: #333;">Nous vous contacterons si nous avons besoin de plus d'informations. Vous pouvez nous joindre à tout moment à cette adresse : <a href="mailto:adanelylia@gmail.com" style="color: #7ED958;">adanelylia@gmail.com</a>.</p>
+
+        <p style="color: #6c757d; text-align: center; margin-top: 30px;">Merci de votre confiance !</p>
+    </div>
+</div>
+{% endblock %}

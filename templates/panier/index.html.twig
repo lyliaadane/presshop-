@@ -1,0 +1,131 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Votre panier{% endblock %}
+
+{% block body %}
+<!-- Page Header Start -->
+<div class="container-fluid page-header py-5">
+    <h1 class="text-center text-white display-6">Votre Panier</h1>
+    <ol class="breadcrumb justify-content-center mb-0">
+        <li class="breadcrumb-item"><a href="#">Accueil</a></li>
+        <li class="breadcrumb-item"><a href="#">Boutique</a></li>
+        <li class="breadcrumb-item active text-white">Panier</li>
+    </ol>
+</div>
+<!-- Page Header End -->
+
+<!-- Cart Page Start -->
+<div class="container-fluid py-5">
+    <div class="container py-5">
+        <div class="table-responsive">
+            {% if items | length > 0 %}
+                <table class="table align-middle text-center">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">Image</th>
+                            <th scope="col">Nom</th>
+                            <th scope="col">Prix</th>
+                            <th scope="col">Quantité</th>
+                            <th scope="col">Total</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in items %}
+                            <tr>
+                                <td>
+                                    <img src="{{ asset('uploads/images/' ~ item.produit.image) }}" class="img-fluid rounded-circle" style="width: 80px; height: 80px;" alt="{{ item.produit.nom }}">
+                                </td>
+                                <td>
+                                    {{ item.produit.nom }}
+                                    {% if item.isPromo %}
+                                        <span class="badge bg-success ms-2">Promo</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ item.prix|number_format(2, '.', ',') }} €</td>
+                                <td>
+                                    <div class="d-flex justify-content-center align-items-center">
+                                        {# Bouton décrémenter la quantité #}
+                                        <a href="{{ path('panier_update', {
+                                    'id': item.id,
+                                    'promo': item.isPromo ? 1 : 0,
+                                    'quantity': item.quantity - 1
+                                }) }}" class="btn btn-sm btn-outline-secondary rounded-circle me-2" 
+                                {% if item.quantity <= 1 %} onclick="return confirm('Voulez-vous supprimer cet article du panier ?');" {% endif %}>
+                                    <i class="fas fa-minus"></i>
+                                </a>
+
+
+                                        <span class="px-2">{{ item.quantity }}</span>
+
+                                        {# Bouton incrémenter la quantité #}
+                                        <a href="{{ path('panier_add', {
+    'id': item.isPromo ? item.id : item.produit.id,
+    'promo': item.isPromo ? 1 : 0
+}) }}" class="btn btn-sm btn-outline-secondary rounded-circle ms-2">
+    <i class="fas fa-plus"></i>
+</a>
+
+                                    </div>
+                                </td>
+
+                                <td>{{ (item.prix * item.quantity)|number_format(2, '.', ',') }} €</td>
+                                <td>
+                                    <a href="{{ path('panier_delete', {'id': item.id, 'promo': item.isPromo ? 1 : 0}) }}" class="btn btn-danger btn-sm rounded-circle">
+                                        <i class="fa fa-times"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="text-center">Votre panier est vide !</p>
+            {% endif %}
+        </div>
+
+        {% if items | length > 0 %}
+        <div class="row g-4 justify-content-end mt-5">
+            <div class="col-8"></div>
+            <div class="col-sm-8 col-md-7 col-lg-6 col-xl-4">
+                <div class="bg-light rounded">
+                    <div class="py-4 mb-4 border-top border-bottom d-flex justify-content-between">
+                        <h5 class="mb-0 ps-4 me-4">Total général</h5>
+                        <p class="mb-0 pe-4">{{ total|number_format(2, '.', ',') }} €</p>
+                    </div>
+                    <a href="{{ path('app_commandes_new') }}" class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-4">
+                        Valider le panier
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+<!-- Cart Page End -->
+<script>
+    document.querySelectorAll('.btn-increase, .btn-decrease, .btn-delete').forEach(btn => {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            const url = this.getAttribute('href');
+
+            fetch(url, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    // Mettre à jour la pastille
+                    document.getElementById('cart-count').innerText = data.count;
+
+                    // Recharger partiellement le panier (recharger page ou rediriger)
+                    location.reload();
+                }
+            });
+        });
+    });
+</script>
+
+{% endblock %}

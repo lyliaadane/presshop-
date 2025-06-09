@@ -1,0 +1,141 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier la Commande{% endblock %}
+
+{% block body %}
+<!--  Checkout Page Start -->
+<div class="container-fluid py-5">
+    <div class="container py-5">
+        <h1 class="mb-4">Modifier la Commande</h1>
+        {{ form_start(form) }}
+        <div class="row g-5">
+            <div class="col-md-12 col-lg-6 col-xl-7">
+                <div class="row">
+                    <div class="col-md-12 col-lg-6">
+                        <div class="form-item w-100">
+                            <label class="form-label my-3">Nom<sup>*</sup></label>
+                            {{ form_widget(form.nom_client) }}
+                        </div>
+                    </div>
+                    <div class="col-md-12 col-lg-6">
+                        <div class="form-item w-100">
+                            <label class="form-label my-3">Prénom<sup>*</sup></label>
+                            {{ form_widget(form.prenom_client) }}
+                        </div>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="form-label my-3">Adresse mail<sup>*</sup></label>
+                    {{ form_widget(form.mail_client) }}
+                </div>
+                <div class="form-item">
+                    <label class="form-label my-3">Numéro de téléphone <sup>*</sup></label>
+                    {{ form_widget(form.telephone_client) }}
+                </div>
+                <div class="form-item">
+                    <label class="form-label my-3">Date/Heure de récupération de la commande<sup>*</sup></label>
+                    {{ form_widget(form.date_recuperation) }}
+                </div>
+                <div class="form-item">
+                    <label class="form-label my-3">Commentaires</label>
+                    {{ form_widget(form.commentaires) }}
+                </div>
+            </div>
+<div class="col-md-12 col-lg-6 col-xl-5">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Produit</th>
+                    <th scope="col">Nom</th>
+                    <th scope="col">Prix</th>
+                    <th scope="col">Quantité</th>
+                    <th scope="col">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% set totalCommande = 0 %}  
+                {% for produitCommande in form.commandeProduits %}
+                     {% set prixUnitaire = produitCommande.vars.data.promo is not null ? produitCommande.vars.data.promo.montant : produitCommande.vars.data.produit.prix %}
+                    {% set totalProduit = prixUnitaire * produitCommande.vars.data.quantite %}
+                    {% set totalCommande = totalCommande + totalProduit %}
+                    <tr>
+                        <th scope="row">
+                            <div class="d-flex align-items-center mt-2">
+                                <img src="{{ asset('uploads/images/' ~ produitCommande.vars.data.produit.image) }}" class="img-fluid rounded-circle" style="width: 90px; height: 90px;" alt="{{ produitCommande.vars.data.produit.nom }}">
+                            </div>
+                        </th>
+                        <td class="py-5">{{ produitCommande.vars.data.produit.nom }}</td>
+                        <td class="py-5 prix-unitaire" data-prix="{{ prixUnitaire }}">
+                            {{ prixUnitaire | number_format(2, '.', ',') }} €
+                        </td>
+                        <td class="py-5">
+                            {{ form_widget(produitCommande.quantite, { 'attr': {'class': 'form-control', 'onchange': 'updateTotal(this)' } }) }}
+                        </td>
+                        <td class="py-5">
+                            <span class="total-price">
+                                 {{ totalProduit | number_format(2, '.', ',') }} €
+                            </span>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+     <div class="container-fluid py-2">
+            <div class="container py-2">
+                <div class="p-2 bg-light rounded">
+    <!-- Section pour le total de la commande -->
+    <div class="row g-4 text-center align-items-center justify-content-center pt-4">
+        <div class="col-md-12">
+            <h5 class="mb-3">Total de la commande :</h5>
+           <h3 id="totalCommande" class="text-primary">{{ totalCommande | number_format(2, '.', ',') }} €</h3>
+        </div>
+    </div>
+
+    <!-- Section pour le bouton -->
+    <div class="row g-4 text-center align-items-center justify-content-center pt-4">
+        <div class="col-md-12">
+            <button type="submit" class="btn border-secondary py-3 px-4 text-uppercase w-100 text-primary">
+                Enregistrer les modifications
+            </button>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+</div>
+        {{ form_end(form) }}
+    </div>
+</div>
+<!-- Checkout Page End -->
+
+<a href="#" class="btn btn-primary border-3 border-primary rounded-circle back-to-top"><i class="fa fa-arrow-up"></i></a>
+<script>
+function updateTotal(input) {
+    let row = input.closest('tr');
+   
+    // Récupérer le prix unitaire stocké en data-prix (pris en compte promo)
+    let prixUnitaireStr = row.querySelector('.prix-unitaire').getAttribute('data-prix');
+    let prixUnitaire = parseFloat(prixUnitaireStr);
+
+    let quantity = parseInt(input.value);
+    if (isNaN(quantity) || quantity < 0) quantity = 0;
+
+    let totalProduct = prixUnitaire * quantity;
+    row.querySelector('.total-price').textContent = totalProduct.toFixed(2) + ' €';
+
+    // Recalculer le total de la commande
+    let totalCommande = 0;
+    document.querySelectorAll('.total-price').forEach(function(span) {
+        let val = parseFloat(span.textContent.replace('€', '').replace(',', '.'));
+        if (!isNaN(val)) {
+            totalCommande += val;
+        }
+    });
+
+    // Mettre à jour le total général
+    document.getElementById('totalCommande').textContent = totalCommande.toFixed(2) + ' €';
+}
+</script>
+{% endblock %}

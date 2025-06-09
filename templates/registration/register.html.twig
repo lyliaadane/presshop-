@@ -1,0 +1,114 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription{% endblock %}
+{% block body %}
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f7f7f7;
+        }
+
+        .registration-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .registration-box {
+            background: #f5f5f5;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .registration-box h1 {
+            font-size: 24px;
+            margin-bottom: 30px;
+            font-weight: normal;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 15px;
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+        }
+
+        .btn-register {
+            background-color: white;
+            color: #57c945;
+            border: 1px solid #57c945;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-register:hover {
+            background-color: #57c945;
+            color: white;
+        }
+
+        label {
+            display: block;
+            text-align: left;
+            margin-bottom: 5px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .form-check-label {
+            font-size: 14px;
+        }
+
+        .logo {
+            margin-bottom: 15px;
+        }
+    </style>
+
+<br/>
+<div class="container-fluid py-3 mb-4">
+<div class="container py-5">
+<div class="registration-container">
+    <div class="registration-box">
+        <div class="logo">
+            <img src="{{ asset('img/logo.png') }}" alt="Logo PrèsShop" width="140">
+        </div>
+        <h1>Créer un compte</h1>
+
+        {{ form_start(registrationForm) }}
+
+        {{ form_widget(registrationForm.nom_utilisateur, {'attr': {'class': 'form-control', 'placeholder': 'Nom d\'utilisateur'}}) }}
+        {{ form_errors(registrationForm.nom_utilisateur) }}
+
+        {{ form_widget(registrationForm.nom, {'attr': {'class': 'form-control', 'placeholder': 'Nom'}}) }}
+        {{ form_errors(registrationForm.nom) }}
+
+        {{ form_widget(registrationForm.prenom, {'attr': {'class': 'form-control', 'placeholder': 'Prénom'}}) }}
+        {{ form_errors(registrationForm.prenom) }}
+
+        {{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'form-control', 'placeholder': 'Mot de passe'}}) }}
+        {{ form_errors(registrationForm.plainPassword) }}
+
+        <div class="form-check mb-3 text-start">
+            {{ form_widget(registrationForm.agreeTerms, {'attr': {'class': 'form-check-input'}}) }}
+            <label class="form-check-label" for="agreeTerms">
+                J'accepte les termes et conditions
+            </label>
+            {{ form_errors(registrationForm.agreeTerms) }}
+        </div>
+
+        <button type="submit" class="btn btn-register">M'inscrire</button>
+
+        {{ form_end(registrationForm) }}
+    </div>
+</div>
+</div>
+</div>
+{% endblock %}

@@ -1,0 +1,115 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nos Produits{% endblock %}
+
+{% block body %}
+<!-- Fruits Shop Start -->
+<div class="container-fluid fruite py-5">
+    <div class="container py-5">
+        <br/>
+        <form method="post" class="mb-4">
+            {{ form_start(form) }}
+            <div class="input-group">
+                {{ form_widget(form.query, {'attr': {'class': 'form-control', 'placeholder': 'Rechercher un produit ou une catégorie...'}}) }}
+                <button class="btn btn-primary" type="submit">Rechercher</button>
+            </div>
+            {{ form_end(form) }}
+        </form>
+        <div class="tab-class text-center">
+            <div class="row g-4">
+                <div class="col-lg-4 text-start">
+                    <h1>Nos Produits</h1>
+                </div>
+                <div class="col-lg-8 text-end">
+                    <ul class="nav nav-pills d-inline-flex text-center mb-5">
+                        <li class="nav-item">
+                            <a class="d-flex m-2 py-2 bg-light rounded-pill active" data-bs-toggle="pill" href="#tab-all">
+                                <span class="text-dark" style="width: 130px;">Tous</span>
+                            </a>
+                        </li>
+                        {% for categorie in categories %}
+                            <li class="nav-item">
+                                <a class="d-flex m-2 py-2 bg-light rounded-pill" data-bs-toggle="pill" href="#tab-{{ categorie.id }}">
+                                    <span class="text-dark" style="width: 130px;">{{ categorie.nom }}</span>
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tab-content">
+                <!-- Tous les produits -->
+                <div id="tab-all" class="tab-pane fade show p-0 active">
+                    <div class="row g-4">
+                        {% for produit in produits %}
+                            <div class="col-md-6 col-lg-4 col-xl-3">
+                                <div class="rounded position-relative fruite-item">
+                                    <div class="fruite-img">
+                                        <img src="{{ asset('uploads/images/' ~ produit.image) }}" class="img-fluid w-100 rounded-top" alt="{{ produit.nom }}">
+                                    </div>
+                                    <div class="text-white bg-secondary px-3 py-1 rounded position-absolute" style="top: 10px; left: 10px;">
+                                        {{ produit.idCategorie.nom }}
+                                    </div>
+                                    <div class="p-4 border border-secondary border-top-0 rounded-bottom">
+                                        <h4>{{ produit.nom }}</h4>
+                                        <div class="d-flex justify-content-between flex-lg-wrap">
+                                            <p class="text-dark fs-5 fw-bold mb-0">{{ produit.prix }} € / {{ produit.uniteVente }}</p>
+                                            <a href="{{ path('panier_add', {'id': produit.id}) }}" class="btn border border-secondary rounded-pill px-3 text-primary">
+                                                <i class="fa fa-shopping-bag me-2 text-primary"></i> Ajouter au panier
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="pagination justify-content-center mt-4">
+                        {{ knp_pagination_render(produits) }}
+                    </div>
+                </div>
+
+                <!-- Produits par catégorie -->
+                {% for categorie in categories %}
+                    <div id="tab-{{ categorie.id }}" class="tab-pane fade show p-0">
+                        <div class="row g-4">
+                            {% for produit in produitsParCategorie[categorie.id] %}
+                                <div class="col-md-6 col-lg-4 col-xl-3">
+                                    <div class="rounded position-relative fruite-item">
+                                        <div class="fruite-img">
+                                            <img src="{{ asset('uploads/images/' ~ produit.image) }}" class="img-fluid w-100 rounded-top" alt="{{ produit.nom }}">
+                                        </div>
+                                        <div class="text-white bg-secondary px-3 py-1 rounded position-absolute" style="top: 10px; left: 10px;">
+                                            {{ categorie.nom }}
+                                        </div>
+                                        <div class="p-4 border border-secondary border-top-0 rounded-bottom">
+                                            <h4>{{ produit.nom }}</h4>
+                                            <p>Stock: {{ produit.quantite }} | {{ produit.uniteVente }}</p>
+                                            <div class="d-flex justify-content-between flex-lg-wrap">
+                                                <p class="text-dark fs-5 fw-bold mb-0">{{ produit.prix }} €</p>
+                                                <a href="{{ path('panier_add', {'id': produit.id}) }}" class="btn border border-secondary rounded-pill px-3 text-primary">
+                                                    <i class="fa fa-shopping-bag me-2 text-primary"></i> Ajouter au panier
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <p class="text-muted">Aucun produit dans cette catégorie.</p>
+                            {% endfor %}
+                        </div>
+                        <div class="pagination justify-content-center mt-4">
+                        {% if produitsParCategorie[categorie.id] is not null %}
+                            {{ knp_pagination_render(produitsParCategorie[categorie.id]) }}
+                        {% endif %}
+
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Fruits Shop End -->
+
+{% endblock %}

@@ -1,0 +1,23 @@
+
+{% block title %}Annulation Commande {% endblock %}
+
+{% block body %}
+<div style="width: 100%; padding: 20px; background-color: #f8f9fa; font-family: Arial, sans-serif;">
+    <div style="max-width: 600px; margin: auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <h1 style="text-align: center; color: #7ED958; margin-bottom: 20px;">Annulation d'une Commande </h1> 
+
+        <div style="background-color: #f1f1f1; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+            <h3 style="color: #6c757d; margin-bottom: 10px;">Informations du Client</h3>
+            <p><strong>Numéro de commande :</strong> {{ commande.id }}</p>
+            <p><strong>Nom :</strong> {{ commande.nomClient }}</p>
+            <p><strong>Prénom :</strong> {{ commande.prenomClient }}</p>
+            <p><strong>Email :</strong> {{ commande.mailClient }}</p>
+            <p><strong>Téléphone :</strong> {{ commande.telephoneClient }}</p>
+            <p><strong>Date de récupération :</strong> {{ commande.dateRecuperation|date('d/m/Y H:i') }}</p>
+        </div>
+
+        
+      
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,133 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Se connecter{% endblock %}
+
+
+{% block body %}
+ <style>
+    body {
+        font-family: 'Open Sans', sans-serif;
+        background-color: #f7f7f7;
+    }
+
+    .login-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+    }
+
+    .login-box {
+        background: #f5f5f5;
+        border-radius: 16px;
+        padding: 40px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.05);
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+    }
+
+    .login-box h1 {
+        font-size: 24px;
+        margin-bottom: 30px;
+        font-weight: normal;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        padding: 10px;
+        font-size: 15px;
+        border: 1px solid #ccc;
+        margin-bottom: 20px;
+    }
+
+    .btn-login {
+        background-color: white;
+        color: #57c945;
+        border: 1px solid #57c945;
+        padding: 10px 20px;
+        border-radius: 20px;
+        font-weight: bold;
+        transition: all 0.3s;
+    }
+
+    .btn-login:hover {
+        background-color: #57c945;
+        color: white;
+    }
+
+    .logo {
+        margin-bottom: 15px;
+    }
+
+    .checkbox label {
+        font-size: 14px;
+    }
+
+    .alert-danger {
+        color: #a94442;
+        background-color: #f2dede;
+        border: 1px solid #ebccd1;
+        border-radius: 10px;
+        padding: 10px;
+        margin-bottom: 20px;
+    }
+</style>
+
+<br/>
+<div class="container-fluid py-3 mb-4">
+<div class="container py-5">
+<div class="login-container">
+    <div class="login-box">
+        <div class="logo">
+            <img src="{{ asset('img/logo.png') }}" alt="Logo PrèsShop" width="140">
+        </div>
+
+        <h1>Se connecter</h1>
+
+        {% if error %}
+            <div class="alert alert-danger">
+                {{ error.messageKey|trans(error.messageData, 'security') }}
+            </div>
+        {% endif %}
+
+        {% if app.user %}
+            <div class="mb-3">
+                Vous êtes connecté(e) en tant que {{ app.user.userIdentifier }},
+                <a href="{{ path('app_logout') }}">Déconnexion</a>
+            </div>
+        {% endif %}
+
+        <form method="post">
+            <input type="text" name="nom_utilisateur" id="inputUsername" class="form-control"
+                   value="{{ last_username }}" placeholder="Nom d'utilisateur" autocomplete="username" required autofocus>
+
+            <input type="password" name="password" id="inputPassword" class="form-control"
+                   placeholder="Mot de passe" autocomplete="current-password" required>
+
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+            <div class="checkbox mb-3 text-start">
+                <label>
+                    <input type="checkbox" name="_remember_me"> Se souvenir de moi
+                </label>
+            </div>
+
+            <button class="btn btn-login w-100" type="submit">
+                Se connecter
+            </button>
+        </form>
+
+        <div class="mt-3">
+            <a href="{{ path('app_request_reset') }}">Réinitialiser votre mot de passe</a>
+        </div>
+
+        <div class="mt-3">
+            <p>Pas encore inscrit(e) ? <a href="{{ path('app_register') }}">M'inscrire</a></p>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+{% endblock %}

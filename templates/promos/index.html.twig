@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nos Promotions{% endblock %}
+
+{% block body %}
+<div class="container-fluid fruite py-5">
+    <div class="container py-5">
+        <div class="row g-4">
+            <div class="col-lg-6 text-start">
+                <h1>Nos Promotions</h1>
+            </div>
+        </div>
+
+        <div class="tab-content">
+            <div class="row g-4">
+                {% for promo in promos %}
+                    {% set produit = promo.idProduit %}
+                    <div class="col-md-6 col-lg-4 col-xl-3">
+    <div class="position-relative border border-danger rounded p-3 text-center" style="background-color: #fff;">
+        <!-- Badge promo -->
+        <div class="position-absolute" style="top: -10px; right: -10px;">
+            <img src="{{ asset('img/promo-icon.png') }}" alt="Promotion" width="50">
+        </div>
+
+        <!-- Image produit -->
+        <img src="{{ asset('uploads/images/' ~ promo.idProduit.image) }}" alt="{{ promo.idProduit.nom }}" class="img-fluid mb-3" style="height: 150px; object-fit: contain;">
+
+        <!-- Nom du produit -->
+        <h5>{{ promo.idProduit.nom }}</h5>
+
+        <!-- Prix -->
+        <p class="mb-1">
+            <span class="text-muted text-decoration-line-through">{{ promo.idProduit.prix }} € / {{ promo.idProduit.uniteVente }}</span>
+        </p>
+        <p class="text-danger fw-bold">
+            À seulement {{ (promo.montant)|number_format(2, '.', ',') }} € 
+        </p>
+
+        <!-- Bouton -->
+        <a href="{{ path('panier_add', {'id': promo.id, 'promo': 1}) }}" class="btn btn-success fw-bold">
+            Ajouter au Panier
+        </a>
+
+    </div>
+</div>
+
+                {% else %}
+                    <p class="text-muted">Aucune promotion active pour le moment.</p>
+                {% endfor %}
+            </div>
+
+            <div class="pagination justify-content-center mt-4">
+                {{ knp_pagination_render(promos) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

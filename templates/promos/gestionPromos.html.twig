@@ -1,0 +1,189 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Promotions{% endblock %}
+
+{% block body %}
+<br/>
+<div class="container-fluid py-5">
+    <div class="container py-5">
+        <button class="btn" style="background-color: #7ac943; color: white;" data-bs-toggle="modal" data-bs-target="#modalAddPromo">
+            <i class="bi bi-plus"></i>
+        </button>
+
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Produit</th>
+                        <th scope="col">Nom</th>
+                        <th scope="col">Ancien prix</th>
+                        <th scope="col">Nouveau prix</th>
+                        <th scope="col">Réduction</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Début</th>
+                        <th scope="col">Fin</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for promo in promos %}
+                        <tr>
+                            <td>
+                                <img src="{{ asset('uploads/images/' ~ promo.idProduit.image) }}" alt="{{ promo.idProduit.nom }}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 50%;">
+                            </td>
+                            <td>{{ promo.idProduit.nom }}</td>
+                            <td><del>{{ promo.idProduit.prix }} €</del></td>
+                            <td><span class="text-danger fw-bold">{{ promo.montant }} €</span></td>
+                            <td>
+                                {% set reduction = promo.idProduit.prix - promo.montant %}
+                                -{{ reduction|number_format(2, '.', ',') }} €
+                            </td>
+                            <td> {{promo.description}}</td>
+                            <td>{{ promo.dateDebut ? promo.dateDebut|date('d/m/Y') : '-' }}</td>
+                            <td>{{ promo.dateFin ? promo.dateFin|date('d/m/Y') : '-' }}</td>
+                            <td>
+                                <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#modalEditPromo{{ promo.id }}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+
+                               <button type="button" class="btn btn-danger btn-sm" onclick="confirmDeletePromo('{{ promo.id }}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                <form id="delete-form-{{ promo.id }}" action="{{ path('app_promos_delete', {'id': promo.id}) }}" method="post" style="display: none;">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ promo.id) }}">
+                                </form>
+
+                            </td>
+                        </tr>
+                         <!-- Modal Modifier Promotion -->
+    <div class="modal fade" id="modalEditPromo{{ promo.id }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="{{ path('app_promos_edit', {'id': promo.id}) }}" method="POST">
+                 <input type="hidden" name="_token" value="{{ csrf_token('edit_promo' ~ promo.id) }}">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Modifier la Promotion</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Produit</label>
+                           <select class="form-select" name="produit_id" required>
+                                {% for produit in produits %}
+                                    <option value="{{ produit.id }}" {% if produit.id == promo.idProduit.id %}selected{% endif %}>{{ produit.nom }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nouveau prix</label>
+                            <input type="number" step="0.01" class="form-control" name="nouveauPrix" value="{{ promo.montant }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <input type="text" class="form-control" name="Description" value="{{ promo.description }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Date de début</label>
+                            <input type="date" class="form-control" name="dateDebut" value="{{ promo.dateDebut ? promo.dateDebut|date('Y-m-d') : '' }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Date de fin</label>
+                            <input type="date" class="form-control" name="dateFin" value="{{ promo.dateFin ? promo.dateFin|date('Y-m-d') : '' }}" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Enregistrer les modifications</button> 
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+   
+       
+        <!-- Modal ajout Promotion -->
+        <div class="modal fade" id="modalAddPromo" tabindex="-1" aria-labelledby="modalAddPromoLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form action="{{ path('app_promos_new') }}" method="POST" enctype="multipart/form-data">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalAddPromoLabel">Ajouter une Promotion</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                        </div>
+
+                        <div class="modal-body">
+
+                            <div class="mb-4">
+                                <label for="produit" class="form-label">Produit</label>
+                                <select class="form-select" id="produit" name="produit_id" required>
+                                    {% for produit in produits %}
+                                        <option value="{{ produit.id }}">{{ produit.nom }} ({{ produit.prix }} €)</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label for="nouveauPrix" class="form-label">Nouveau prix</label>
+                                    <input type="number" step="0.01" class="form-control" id="nouveauPrix" name="nouveauPrix" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="seuil" class="form-label">Seuil</label>
+                                    <input type="number" class="form-control" id="seuil" name="seuil">
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="Description" class="form-label">Description</label>
+                                <textarea class="form-control" id="Description" name="Description" rows="3" required></textarea>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="dateDebut" class="form-label">Date de début</label>
+                                    <input type="date" class="form-control" id="dateDebut" name="dateDebut" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="dateFin" class="form-label">Date de fin</label>
+                                    <input type="date" class="form-control" id="dateFin" name="dateFin" required>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success">Enregistrer</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function confirmDeletePromo(id) {
+        Swal.fire({
+            title: 'Êtes-vous sûr ?',
+            text: "Cette promotion sera définitivement supprimée.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Oui, supprimer !',
+            cancelButtonText: 'Annuler'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('delete-form-' + id).submit();
+            }
+        });
+    }
+    </script>
+
+   
+{% endblock %}

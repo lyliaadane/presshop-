@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Paiement de la commande{% endblock %}
+
+{% block body %}
+<!-- Formulaire de paiement -->
+<form method="POST" action="{{ path('app_paiement', { 'id': commande.id }) }}">
+    <div class="mb-3">
+        <label for="carte_numero" class="form-label">Numéro de carte</label>
+        <input type="text" class="form-control" name="carte_numero" required>
+    </div>
+    <div class="mb-3">
+        <label for="carte_expiration" class="form-label">Date d'expiration</label>
+        <input type="text" class="form-control" name="carte_expiration" placeholder="MM/AA" required>
+    </div>
+    <div class="mb-3">
+        <label for="carte_cvv" class="form-label">CVV</label>
+        <input type="text" class="form-control" name="carte_cvv" required>
+    </div>
+    <button type="submit" class="btn btn-success w-100">Payer</button>
+</form>
+{% endblock %}

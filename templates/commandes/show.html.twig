@@ -1,0 +1,106 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Consultation de la Commande{% endblock %}
+
+{% block body %}
+<!-- Consultation Page Start -->
+<div class="container-fluid py-5">
+    <div class="container py-5">
+        <h1 class="mb-4">Détails de la Commande</h1>
+        <div class="row g-5">
+            <div class="col-md-12 col-lg-6 col-xl-7">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        Informations Client
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Nom :</strong> {{ commande.nomClient }}</p>
+                        <p><strong>Prénom :</strong> {{ commande.prenomClient }}</p>
+                        <p><strong>Email :</strong> {{ commande.mailClient }}</p>
+                        <p><strong>Téléphone :</strong> {{ commande.telephoneClient }}</p>
+                        <p><strong>Date/Heure de récupération :</strong> {{ commande.dateRecuperation|date('d/m/Y H:i') }}</p>
+                         <p><strong>Commentaires :</strong> {{ commande.commentaires }}</p>
+                       
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12 col-lg-6 col-xl-5">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        Produits Commandés
+                    </div>
+                    <div class="card-body table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Produit</th>
+                                    <th scope="col">Nom</th>
+                                    <th scope="col">Prix</th>
+                                    <th scope="col">Quantité</th>
+                                    <th scope="col">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for produitCommande in commande.commandeProduits %}
+                                    {% set prixUnitaire = produitCommande.promo is not null ? produitCommande.promo.montant : produitCommande.produit.prix %}
+                                    {% set totalProduit = prixUnitaire * produitCommande.quantite %}
+                                    <tr>
+                                        <td>
+                                            <img src="{{ asset('uploads/images/' ~  produitCommande.produit.image) }}" class="img-fluid rounded-circle" style="width: 90px; height: 90px;" alt="{{ produitCommande.produit.nom }}">
+                                        </td>
+                                        <td class="py-3">{{ produitCommande.produit.nom }}</td>
+                                        <td class="py-3">
+                                            {{ prixUnitaire  | number_format(2, '.', ',') }} €
+                                        </td>
+                                        <td class="py-3">
+                                            {{ produitCommande.quantite }}
+                                        </td>
+                                        <td class="py-3">
+                                            {{ (totalProduit) | number_format(2, '.', ',') }} €
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="mb-3">Total de la commande :</h5>
+                        <h3 class="text-primary">
+                             {{
+                commande.commandeProduits | reduce(
+                    (total, produitCommande) =>
+                        total + (
+                            (produitCommande.promo is not null ? produitCommande.promo.montant : produitCommande.produit.prix)
+                            * produitCommande.quantite
+                                        ), 0
+                                ) | number_format(2, '.', ',')
+                            }} €
+                        </h3>
+                       
+                    </div>
+                </div>
+                 {# Boutons Modifier et Annuler #}
+                        {% if commande.statut == 0 and commande.dateRecuperation > (date()|date_modify('+30 minutes')) %}
+                            <div class="mt-4 d-flex justify-content-center gap-3">
+                                <a href="{{ path('app_commandes_edit', {'id': commande.id}) }}" class="btn btn-warning">
+                                    Modifier la Commande
+                                </a>
+                                <form method="post" action="{{ path('app_commandes_delete', {'id': commande.id}) }}" style="display:inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir annuler cette commande ?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ commande.id) }}">
+                                    <button class="btn btn-danger">Annuler la Commande</button>
+                                </form>
+                            </div>
+                        {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Consultation Page End -->
+
+<a href="#" class="btn btn-primary border-3 border-primary rounded-circle back-to-top">
+    <i class="fa fa-arrow-up"></i>
+</a>
+{% endblock %}

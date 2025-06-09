@@ -1,0 +1,193 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des comptes{% endblock %}
+
+{% block body %}
+<div class="container-fluid py-5">
+    <div class="container py-5">
+
+        <div class="d-flex justify-content-start mb-4">
+            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalAjout">
+                <i class="fas fa-user-plus"></i> Ajouter un compte
+            </button>
+        </div>
+
+
+        <div class="table-responsive">
+            <table class="table align-middle text-center">
+                <thead class="table-light">
+                    <tr>
+                        <th>Prénom</th>
+                        <th>Nom</th>
+                        <th>Nom d’utilisateur</th>
+                        <th>Rôle</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for utilisateur in utilisateurs %}
+                        <tr>
+                            <td>{{ utilisateur.prenom }}</td>
+                            <td>{{ utilisateur.nom }}</td>
+                            <td>{{ utilisateur.nomUtilisateur }}</td>
+                            <td>
+                                {% if 'ROLE_ADMIN' in utilisateur.roles %}
+                                    Administrateur
+                                {% else %}
+                                    Employé
+                                {% endif %}
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#modalDetail{{ utilisateur.id }}">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+
+                                <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#modalEdit{{ utilisateur.id }}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+
+                                <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete('{{ utilisateur.id }}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+
+                                <form id="delete-form-{{ utilisateur.id }}" action="{{ path('app_utilisateurs_delete', {'id': utilisateur.id}) }}" method="post" style="display: none;">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ utilisateur.id) }}">
+                                </form>
+                            </td>
+                        </tr>
+
+                        <!-- Modal Détails -->
+                        <div class="modal fade" id="modalDetail{{ utilisateur.id }}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Détails de l'utilisateur</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p><strong>Prénom :</strong> {{ utilisateur.prenom }}</p>
+                                        <p><strong>Nom :</strong> {{ utilisateur.nom }}</p>
+                                        <p><strong>Nom d'utilisateur :</strong> {{ utilisateur.nomUtilisateur }}</p>
+                                        <p><strong>Rôle :</strong> 
+                                            {% if 'ROLE_ADMIN' in utilisateur.roles %}
+                                                Administrateur
+                                            {% else %}
+                                                Employé
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modal Édition -->
+                        <div class="modal fade" id="modalEdit{{ utilisateur.id }}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <form method="POST" action="{{ path('app_utilisateurs_edit', {'id': utilisateur.id}) }}">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Modifier l'utilisateur</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label class="form-label">Prénom</label>
+                                                <input type="text" class="form-control" name="prenom" value="{{ utilisateur.prenom }}" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Nom</label>
+                                                <input type="text" class="form-control" name="nom" value="{{ utilisateur.nom }}" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Nom d'utilisateur</label>
+                                                <input type="text" class="form-control" name="nom_utilisateur" value="{{ utilisateur.nomUtilisateur }}" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Rôle</label>
+                                                <select class="form-select" name="roles[]" required>
+                                                    <option value="ROLE_EMPLOYE" {% if 'ROLE_EMPLOYE' in utilisateur.roles %}selected{% endif %}>Employé</option>
+                                                    <option value="ROLE_ADMIN" {% if 'ROLE_ADMIN' in utilisateur.roles %}selected{% endif %}>Administrateur</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Modal Ajout -->
+        <div class="modal fade" id="modalAjout" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form method="POST" action="{{ path('app_utilisateurs_new') }}">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Ajouter un compte</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">Prénom</label>
+                                <input type="text" class="form-control" name="prenom" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Nom</label>
+                                <input type="text" class="form-control" name="nom" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Nom d'utilisateur</label>
+                                <input type="text" class="form-control" name="nom_utilisateur" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Mot de passe</label>
+                                <input type="password" class="form-control" name="mot_de_passe" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Rôle</label>
+                                <select class="form-select" name="roles[]" required>
+                                    <option value="ROLE_EMPLOYE">Employé</option>
+                                    <option value="ROLE_ADMIN">Administrateur</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success">Créer le compte</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- SweetAlert2 pour confirmation -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmDelete(id) {
+        Swal.fire({
+            title: 'Êtes-vous sûr ?',
+            text: "Cette action est irréversible !",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Oui, supprimer !',
+            cancelButtonText: 'Annuler'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('delete-form-' + id).submit();
+            }
+        });
+    }
+</script>
+{% endblock %}

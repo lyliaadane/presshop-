@@ -1,0 +1,131 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des catégories{% endblock %}
+
+{% block body %}
+  <br/>
+    <div class="container-fluid py-5">
+        <div class="container py-5">
+
+    <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#modalAddCategorie">
+        Ajouter une catégorie
+    </button>
+
+ <div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nom</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for category in categories %}
+            <tr>
+                <td>{{ category.id }}</td>
+                <td>{{ category.nom }}</td>
+                <td>{{ category.description }}</td>
+                <td>
+                    <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#modalCategorieShow{{ category.id }}">
+                        <i class="fas fa-eye"></i>
+                    </button>
+
+                    <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#modalCategorieEdit{{ category.id }}">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <form method="post" action="{{ path('categorie_delete', {'id': category.id}) }}" style="display:inline-block" onsubmit="return confirm('Êtes-vous sûr ?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ category.id) }}">
+                        <button class="btn btn-danger btn-sm">  <i class="fas fa-trash"></i></button>
+                    </form>
+                </td>
+            </tr>
+              <div class="modal fade" id="modalCategorieShow{{ category.id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Détails de la catégorie</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>ID :</strong> {{ category.id }}</p>
+                <p><strong>Nom :</strong> {{ category.nom }}</p>
+                <p><strong>Description :</strong> {{ category.description }}</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modalCategorieEdit{{ category.id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{{ path('categorie_edit', {'id': category.id}) }}" method="POST">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modifier la catégorie</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="nom" class="form-label">Nom</label>
+                        <input type="text" class="form-control" name="nom" value="{{ category.nom }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" name="description" rows="3">{{ category.description }}</textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+        {% else %}
+            <tr><td colspan="4">Aucune catégorie trouvée.</td></tr>
+
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    </div>
+
+    <div class="modal fade" id="modalCategorie" tabindex="-1" aria-labelledby="modalCategorieLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" id="modalCategorieContent">
+      <!-- Contenu du formulaire chargé en AJAX -->
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalAddCategorie" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ajouter une catégorie</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form action="{{ path('categorie_new') }}" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="nom" class="form-label">Nom</label>
+                        <input type="text" class="form-control" id="nom" name="nom" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Enregistrer</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
