@@ -183,6 +183,7 @@
 
         let response = await fetch("/commandes/store", {
             method: 'POST',
+            credentials: 'same-origin', 
             body: formData
         });
 
