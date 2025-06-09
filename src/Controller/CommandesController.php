@@ -19,6 +19,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Form\FormInterface;
 
 #[Route('/commandes')]
 final class CommandesController extends AbstractController
@@ -177,6 +178,16 @@ final class CommandesController extends AbstractController
         ]);
     }
 
+    private function getFormErrors(FormInterface $form): array
+{
+    $errors = [];
+    foreach ($form->getErrors(true) as $error) {
+        $field = $error->getOrigin()->getName();
+        $errors[$field][] = $error->getMessage();
+    }
+    return $errors;
+}
+
 
     #[Route('/store', name: 'app_commande_store', methods: ['POST'])]
     public function storeCommande(Request $request, SessionInterface $session): JsonResponse
@@ -190,7 +201,10 @@ final class CommandesController extends AbstractController
             return new JsonResponse(['success' => true]);
         }
 
-        return new JsonResponse(['success' => false]);
+        return new JsonResponse([
+            'success' => false,
+            'errors'  => $this->getFormErrors($form),
+        ], 400);
     }
 
 
