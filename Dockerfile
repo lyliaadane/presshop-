@@ -1,18 +1,21 @@
-# Installer Node.js et npm
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-  && apt-get install -y nodejs
+# Dockerfile
+FROM php:8.2-cli
 
-# Copier package.json et package-lock.json
-COPY package*.json ./
+# Installe les dépendances
+RUN apt-get update && apt-get install -y unzip zip git curl libicu-dev libonig-dev libxml2-dev \
+    && docker-php-ext-install intl pdo pdo_mysql opcache
 
-# Installer les dépendances npm
-RUN npm install
+# Installe Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Copier le reste des fichiers
-COPY . .
+# Copie les fichiers
+WORKDIR /app
+COPY . /app
 
-# Lancer la build JS
-RUN npm run build
+# Installe les dépendances Symfony sans exécuter les scripts
+RUN composer install --no-dev --optimize-autoloader --no-scripts
 
-# Installer les dépendances PHP sans dev et sans scripts (ou avec scripts si tu préfères)
-RUN composer install --no-dev --optimize-autoloader
+EXPOSE 8080
+
+# Démarre le serveur Symfony
+CMD ["php", "-S", "0.0.0.0:8080", "-t", "public"]
