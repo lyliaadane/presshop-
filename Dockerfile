@@ -12,6 +12,11 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 WORKDIR /app
 COPY . /app
 
+#  Créer le dossier d'uploads et régler les permissions
+RUN mkdir -p public/uploads/images \
+ && chown -R www-data:www-data public/uploads/images \
+ && chmod -R 775 public/uploads/images
+
 # Installe les dépendances Symfony sans exécuter les scripts
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
