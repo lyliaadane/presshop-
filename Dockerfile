@@ -23,4 +23,5 @@ RUN composer install --no-dev --optimize-autoloader --no-scripts
 EXPOSE 8080
 
 # Démarre le serveur Symfony
-CMD ["php", "-S", "0.0.0.0:8080", "-t", "public"]
+#CMD ["php", "-S", "0.0.0.0:8080", "-t", "public"]
+CMD ["/entrypoint.sh"]

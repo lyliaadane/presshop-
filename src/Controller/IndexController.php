@@ -83,21 +83,21 @@ final class IndexController extends AbstractController
         }
 
         #[Route('/test-smtp', name: 'app_test_smtp')]
-public function testSmtp(): Response
-{
-    $host = 'smtp.gmail.com';
-    $port = 587;
-    $timeout = 10;
+        public function testSmtp(): Response
+        {
+            $host = 'smtp.gmail.com';
+            $port = 587;
+            $timeout = 10;
 
-    $connection = @fsockopen($host, $port, $errno, $errstr, $timeout);
+            $connection = @fsockopen($host, $port, $errno, $errstr, $timeout);
 
-    if ($connection) {
-        fclose($connection);
-        return new Response("✅ Connexion SMTP possible vers $host:$port");
-    } else {
-        return new Response("❌ Échec de connexion : $errstr ($errno)");
-    }
-}
+            if ($connection) {
+                fclose($connection);
+                return new Response("✅ Connexion SMTP possible vers $host:$port");
+            } else {
+                return new Response("❌ Échec de connexion : $errstr ($errno)");
+            }
+        }
 
 
 
