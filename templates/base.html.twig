@@ -226,8 +226,8 @@
                 <div class="d-flex mb-2">
                     <a href="#" class="text-black me-3 text-decoration-none">PrèsShop</a>
                     {% if is_granted('ROLE_ADMIN') %}
-                        <a href="#" class="text-black me-3 text-decoration-none">Politique de confidentialité</a>
-                        <a href="#" class="text-black text-decoration-none">CGV</a>
+                        <a href="{{ path('privacy_policy') }}" class="text-black me-3 text-decoration-none">Politique de confidentialité</a>
+                        <a href="{{ path('cgv') }}" class="text-black text-decoration-none">CGV</a>
                     {% else %} 
                         <a href="{{ path('privacy_policy') }}" class="text-black me-3 text-decoration-none">Politique de confidentialité</a>
                         <a href="{{ path('cgv') }}" class="text-black text-decoration-none">CGV</a>
