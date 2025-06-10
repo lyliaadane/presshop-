@@ -14,6 +14,8 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\User\InMemoryUser;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use App\Service\ReviewService;
+use Symfony\Component\Mime\Email;
+use Symfony\Component\Mailer\MailerInterface;
 
 final class IndexController extends AbstractController
 {
@@ -62,6 +64,24 @@ final class IndexController extends AbstractController
             //'isAdmin' => $isAdmin,
         ]);
     }
+
+    #[Route('/test-mail', name: 'app_test_mail')]
+        public function testMail(MailerInterface $mailer): Response
+        {
+            $email = (new Email())
+                ->from('adanelylia@gmail.com')
+                ->to('lyliaadn@gmail.com')
+                ->subject('Test depuis Railway')
+                ->text('Ceci est un test d\'envoi de mail depuis Railway.');
+
+            try {
+                $mailer->send($email);
+                return new Response('Mail envoyé !');
+            } catch (\Exception $e) {
+                return new Response('Erreur : ' . $e->getMessage());
+            }
+        }
+
 
 
     #[Route('/contact', name: 'app_contact')]
