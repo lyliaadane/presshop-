@@ -17,6 +17,8 @@ RUN mkdir -p public/uploads/images \
  && chown -R www-data:www-data public/uploads/images \
  && chmod -R 775 public/uploads/images
 
+RUN chmod +x /app/entrypoint.sh
+
 # Installe les dépendances Symfony sans exécuter les scripts
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
@@ -24,4 +26,5 @@ EXPOSE 8080
 
 # Démarre le serveur Symfony
 #CMD ["php", "-S", "0.0.0.0:8080", "-t", "public"]
-CMD ["/entrypoint.sh"]
+CMD ["bash", "/app/entrypoint.sh"]
+
