@@ -66,10 +66,7 @@
                             
                                 </td>
                             </tr>
-                            {% endfor %}
-                            </tbody>
-                              </table>
-                            {% for commande in commandes %}
+
                             <!-- Modal Commande -->
                             <div class="modal fade" id="modalCommande{{ commande.id }}" tabindex="-1" aria-labelledby="modalLabel{{ commande.id }}" aria-hidden="true">
                                 <div class="modal-dialog modal-lg">
@@ -88,60 +85,65 @@
                                             <p><strong>Date/Heure de récupération :</strong> {{ commande.dateRecuperation ? commande.dateRecuperation|date('d/m/Y H:i') : 'Non définie' }}</p>
                                             <p><strong>Commentaires :</strong> {{ commande.commentaires|default('Aucun') }}</p>
 
-                                                <!-- Produits commandés -->
-                                                <h5 class="mt-4">Produits Commandés</h5>
-                                                {% if commande.commandeProduits is not empty %}
-                                                    <form action="{{ path('update_quantite', {'id': commande.id}) }}" method="post">
-                                                        <input type="hidden" name="commande_id" value="{{ commande.id }}">
-                                                        <!-- <input type="hidden" id="total-commande-input-{{ commande.id }}" name="total_commande" value="{{ commande.commandeProduits | map(p => p.produit.prix * p.quantite) | reduce((a, b) => a + b) }}"> -->
-                                                        {% set total = 0 %}
-                                                        {% for produitCommande in commande.commandeProduits %}
-                                                            {% set prixProduit = produitCommande.promo is not null ? produitCommande.promo.montant : produitCommande.produit.prix %}
-                                                            {% set total = total + (prixProduit * produitCommande.quantite) %}
+<!-- Produits commandés -->
+<h5 class="mt-4">Produits Commandés</h5>
+{% if commande.commandeProduits is not empty %}
+    <form action="{{ path('update_quantite', {'id': commande.id}) }}" method="post">
+        <input type="hidden" name="commande_id" value="{{ commande.id }}">
+       <!-- <input type="hidden" id="total-commande-input-{{ commande.id }}" name="total_commande" value="{{ commande.commandeProduits | map(p => p.produit.prix * p.quantite) | reduce((a, b) => a + b) }}"> -->
+        {% set total = 0 %}
+        {% for produitCommande in commande.commandeProduits %}
+             {% set prixProduit = produitCommande.promo is not null ? produitCommande.promo.montant : produitCommande.produit.prix %}
+            {% set total = total + (prixProduit * produitCommande.quantite) %}
 
-                                                            {% if commande.statut == 0 %}
-                                                                <li class="list-group-item d-flex align-items-center gap-3">
-                                                                    <input type="text" class="form-control flex-grow-1" value="{{ produitCommande.produit.nom }}" disabled>
-                                                                    <input type="number" 
-                                                                        class="form-control flex-grow-1 produit-quantite" 
-                                                                        name="quantite[{{ produitCommande.produit.id }}]" 
-                                                                        value="{{ produitCommande.quantite }}"  
-                                                                        min="1" 
-                                                                        required
-                                                                        data-prix="{{ prixProduit }}">
-                                                                </li>
-                                                            {% else %}
-                                                                <li class="list-group-item d-flex align-items-center gap-3">
-                                                                    <input type="text" class="form-control flex-grow-1" value="{{ produitCommande.produit.nom }}" disabled>
-                                                                    <input type="number" class="form-control flex-grow-1" value="{{ produitCommande.quantite }}" disabled>
-                                                                </li>
-                                                            {% endif %}
-                                                        {% endfor %}
-                                                        
-                                                        <h4 class="text-primary text-end">Total :  
-                                                            <span id="total-commande-{{ commande.id }}">
-                                                                {{ total | number_format(2, '.', ',') }} €
-                                                            </span>
-                                                        </h4>
+            {% if commande.statut == 0 %}
+                <li class="list-group-item d-flex align-items-center gap-3">
+                    <input type="text" class="form-control flex-grow-1" value="{{ produitCommande.produit.nom }}" disabled>
+                    <input type="number" 
+                           class="form-control flex-grow-1 produit-quantite" 
+                           name="quantite[{{ produitCommande.produit.id }}]" 
+                           value="{{ produitCommande.quantite }}"  
+                           min="1" 
+                           required
+                           data-prix="{{ prixProduit }}">
+                </li>
+            {% else %}
+                <li class="list-group-item d-flex align-items-center gap-3">
+                    <input type="text" class="form-control flex-grow-1" value="{{ produitCommande.produit.nom }}" disabled>
+                    <input type="number" class="form-control flex-grow-1" value="{{ produitCommande.quantite }}" disabled>
+                </li>
+            {% endif %}
+        {% endfor %}
+        
+        <h4 class="text-primary text-end">Total :  
+            <span id="total-commande-{{ commande.id }}">
+                  {{ total | number_format(2, '.', ',') }} €
+            </span>
+        </h4>
 
-                                                    
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-                                                            {% if commande.statut == 0 %}
-                                                                <button type="submit" class="btn btn-success">Commande Prête</button>
-                                                            {% endif %}
-                                                        </div>
+       
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+             {% if commande.statut == 0 %}
 
-                                                {% else %}
-                                                    <p class="text-muted">Aucun produit commandé.</p>
-                                                {% endif %}
+            <button type="submit" class="btn btn-success">Commande Prête</button>
+            {% endif %}
+        </div>
+
+{% else %}
+    <p class="text-muted">Aucun produit commandé.</p>
+{% endif %}
+
+
+
+
                                     </div>
                                 </div>
                             </div>
 
                         {% endfor %}
-                    
-              
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
