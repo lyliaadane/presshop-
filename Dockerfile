@@ -3,7 +3,7 @@ FROM php:8.2-cli
 
 # Installe les dépendances
 RUN apt-get update && apt-get install -y unzip zip git curl libicu-dev libonig-dev libxml2-dev \
-    && docker-php-ext-install intl pdo pdo_mysql opcache
+    && docker-php-ext-install intl pdo pdo_mysql opcache bcmath
 
 # Installe Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
