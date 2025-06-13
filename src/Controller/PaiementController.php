@@ -132,7 +132,7 @@ public function success(Request $request, EntityManagerInterface $entityManager,
         // Envoi emails
         $emailMagasin = (new Email())
             ->from('adanelylia@gmail.com')
-            ->to('lyliaadn@gmail.com')
+            ->to('adanelylia@gmail.com')
             ->subject('Nouvelle Commande Reçue')
             ->html($this->renderView('commandes/nouvelle_commande.html.twig', [
                 'commande' => $commande,
